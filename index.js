@@ -2,10 +2,18 @@ const argv = process.argv;
 const fs = require("fs");
 
 let names = argv[3];
+let command = argv[2];
 
 let json = { arrayName: [names] };
 
-switch (argv[2]) {
+if (command) {
+  command = command.toLowerCase();
+}
+if (names && (command === "add" || command === "rm")) {
+  names = names.toLowerCase();
+}
+
+switch (command) {
   case "add":
     if (!fs.existsSync("DATA_BASE.json")) {
       if (!names) {
@@ -29,10 +37,15 @@ switch (argv[2]) {
 
     break;
   case "ls":
-    let data = fs.readFileSync("DATA_BASE.json", "utf8");
-    let parseData = JSON.parse(data);
-    for (let i = 0; i < parseData.arrayName.length; i++) {
-      console.log(`${i} ${parseData.arrayName[i]}`);
+    if (names) {
+      console.log(`remove  (${names}) from command`);
+      process.exit(2);
+    } else {
+      let data = fs.readFileSync("DATA_BASE.json", "utf8");
+      let parseData = JSON.parse(data);
+      for (let i = 0; i < parseData.arrayName.length; i++) {
+        console.log(`${i} ${parseData.arrayName[i]}`);
+      }
     }
     break;
   case "rm":
@@ -50,15 +63,20 @@ switch (argv[2]) {
     }
     break;
   case "reset":
-    let datos = fs.readFileSync("DATA_BASE.json", "utf8");
-    let parseDatas = JSON.parse(datos);
-    parseDatas.arrayName = [];
-    fs.writeFileSync("DATA_BASE.json", JSON.stringify(parseDatas)), "utf8";
+    if (names) {
+      console.log(`remove  (${names}) from command`);
+      process.exit(2);
+    } else {
+      let datos = fs.readFileSync("DATA_BASE.json", "utf8");
+      let parseDatas = JSON.parse(datos);
+      parseDatas.arrayName = [];
+      fs.writeFileSync("DATA_BASE.json", JSON.stringify(parseDatas)), "utf8";
+    }
     break;
   default:
     console.log("enter a command");
-    console.log("to add name: add manuel");
-    console.log("list names: ls");
+    console.log("to add name: node index.js add manuel");
+    console.log("list names: node index.js ls");
     console.log("delet name: rm manuel");
     console.log("delete name list: reset");
     break;
